@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Drawing.Drawing2D;
+using System.Text;
 using System.Text.RegularExpressions;
 using Unidecode.NET;
 
@@ -143,32 +145,46 @@ namespace NT101_PJ
 
         private void InitMatrix(int size)
         {
-            var characters = Enumerable.Range('A', 26)
-                .Concat(Enumerable.Range('0', 10))
-                .Select(c => (char)c)
-                .ToArray();
+            int charNum = 65;
+            int offset = 0;
+            alphabet = new List<string>();
 
-            alphabet = characters.Select(c => c.ToString()).ToList();
-
-            // Use a single loop with calculated coordinates for button placement
             for (int i = 0; i < size; i++)
             {
+                Button oldBtn = new Button() { Width = 0, Height = 0, Location = new Point(0, offset * 30) };
                 for (int j = 0; j < size; j++)
                 {
-                    var charIndex = i * size + j;
-                    var charNum = characters[charIndex % characters.Length]; // Handle character wrapping
-
-                    var btn = new Button()
+                    Button btn = new Button()
                     {
                         Width = 30,
                         Height = 30,
-                        Location = new Point(j * 30, i * 30), // Use simple coordinates
-                        Text = charNum.ToString()
+                        Location = new Point(oldBtn.Location.X + oldBtn.Width, oldBtn.Location.Y)
                     };
+
+                    if (charNum > 90)
+                    {
+                        charNum = 48;
+                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
+                        alphabet.Add(btn.Text);
+                    }
+                    else if (charNum == 74 && size == 5)
+                    {
+                        charNum = 75;
+                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
+                        alphabet.Add(btn.Text);
+                    }
+                    else
+                    {
+                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
+                        alphabet.Add(btn.Text);
+                    }
 
                     arrayMatrix[i, j] = btn;
                     panel1.Controls.Add(btn);
+                    oldBtn = btn;
+                    charNum++;
                 }
+                offset++;
             }
         }
 
