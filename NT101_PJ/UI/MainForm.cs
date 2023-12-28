@@ -5,6 +5,7 @@ namespace NT101_PJ
         public MainForm()
         {
             InitializeComponent();
+            this.FormClosed += (sender, e) => Application.Exit();
         }
 
         private void btPlayFair_Click(object sender, EventArgs e)
@@ -12,6 +13,13 @@ namespace NT101_PJ
             this.Hide();
             PlayFairForm playFairForm = new PlayFairForm();
             playFairForm.Show();
+        }
+
+        private void btnRSA_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            RSAForm rsaForm = new RSAForm();
+            rsaForm.Show();
         }
     }
 }

@@ -119,6 +119,7 @@
             btnRSA.TabIndex = 7;
             btnRSA.Text = "RSA";
             btnRSA.UseVisualStyleBackColor = true;
+            btnRSA.Click += btnRSA_Click;
             // 
             // btPlayFair
             // 
@@ -147,7 +148,7 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "MainForm";
-            Text = "Form1";
+            Text = "An Toan Mang May Tinh";
             ResumeLayout(false);
             PerformLayout();
         }

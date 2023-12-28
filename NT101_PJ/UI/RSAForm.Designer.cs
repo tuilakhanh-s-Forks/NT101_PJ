@@ -51,6 +51,7 @@
             buttonEncrypt = new Button();
             buttonDecrypt = new Button();
             buttonSwap = new Button();
+            labelRSA = new Label();
             groupBoxInput.SuspendLayout();
             groupBoxOutput.SuspendLayout();
             groupBoxKey.SuspendLayout();
@@ -306,11 +307,22 @@
             buttonSwap.UseVisualStyleBackColor = true;
             buttonSwap.Click += buttonSwap_Click;
             // 
+            // labelRSA
+            // 
+            labelRSA.AutoSize = true;
+            labelRSA.Font = new Font("UVN Chim Bien Nang", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            labelRSA.Location = new Point(488, 21);
+            labelRSA.Name = "labelRSA";
+            labelRSA.Size = new Size(266, 41);
+            labelRSA.TabIndex = 18;
+            labelRSA.Text = "RSA CryptoSystem";
+            // 
             // RSAForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1238, 595);
+            Controls.Add(labelRSA);
             Controls.Add(buttonSwap);
             Controls.Add(buttonDecrypt);
             Controls.Add(buttonEncrypt);
@@ -319,13 +331,15 @@
             Controls.Add(groupBoxOutput);
             Controls.Add(groupBoxInput);
             Name = "RSAForm";
-            Text = "RSAForm";
+            Text = "RSA";
+            FormClosed += RSAForm_FormClosed;
             Load += RSAForm_Load;
             groupBoxInput.ResumeLayout(false);
             groupBoxOutput.ResumeLayout(false);
             groupBoxKey.ResumeLayout(false);
             groupBoxKey.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -353,5 +367,6 @@
         private Button buttonSwap;
         private Label labelPadding;
         private ComboBox comboBoxPadding;
+        private Label labelRSA;
     }
 }

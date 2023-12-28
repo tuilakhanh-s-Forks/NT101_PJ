@@ -30,8 +30,6 @@ namespace NT101_PJ
         private void btExit_Click(object sender, EventArgs e)
         {
             this.Close();
-            var MainForm = new MainForm();
-            MainForm.Show();
         }
 
         private string DistinctString(string input)
@@ -423,6 +421,12 @@ namespace NT101_PJ
             checkString(5);
             check = 5;
             rbt5x5.Select();
+        }
+
+        private void PlayFairForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var MainForm = new MainForm();
+            MainForm.Show();
         }
     }
 }

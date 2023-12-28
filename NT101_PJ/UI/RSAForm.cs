@@ -1,4 +1,5 @@
 ﻿using NT101_PJ.Crypto;
+using NT101_PJ.Utils;
 using System.Security.Cryptography;
 
 namespace NT101_PJ
@@ -189,6 +190,12 @@ namespace NT101_PJ
         {
             richTextBoxInput.Text = richTextBoxOutput.Text;
             richTextBoxOutput.Text = string.Empty;
+        }
+
+        private void RSAForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            var MainForm = new MainForm();
+            MainForm.Show();
         }
     }
 }

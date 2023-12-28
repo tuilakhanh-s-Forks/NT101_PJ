@@ -1,4 +1,4 @@
-﻿namespace NT101_PJ
+﻿namespace NT101_PJ.Utils
 {
     public enum KeySize
     {

@@ -277,7 +277,8 @@
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Name = "PlayFairForm";
-            Text = "PlayFairForm";
+            Text = "Play Fair";
+            FormClosed += PlayFairForm_FormClosed;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox3.ResumeLayout(false);
