@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using System.Text.RegularExpressions;
-using System.Drawing.Drawing2D;
+using Unidecode.NET;
 
 namespace NT101_PJ
 {
@@ -32,71 +24,45 @@ namespace NT101_PJ
             this.Close();
         }
 
-        private string DistinctString(string input)
+        private string PreparePlainText(int size)
         {
-            List<char> distinctChars = input.Distinct().ToList();
-            return new string(distinctChars.ToArray());
-        }
-
-        public static string RemoveUnicode(string text)
-        {
-            string[] fromChars = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ", "đ", "é", "è", "ẻ", "ẽ", "ẹ", "ê", "ế", "ề", "ể", "ễ", "ệ", "í", "ì", "ỉ", "ĩ", "ị", "ó", "ò", "ỏ", "õ", "ọ", "ô", "ố", "ồ", "ổ", "ỗ", "ộ", "ơ", "ớ", "ờ", "ở", "ỡ", "ợ", "ú", "ù", "ủ", "ũ", "ụ", "ư", "ứ", "ừ", "ử", "ữ", "ự", "ý", "ỳ", "ỷ", "ỹ", "ỵ", };
-            string[] toChars = new string[] { "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "d", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "i", "i", "i", "i", "i", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "o", "u", "u", "u", "u", "u", "u", "u", "u", "u", "u", "u", "y", "y", "y", "y", "y", };
-
-            for (int i = 0; i < fromChars.Length; i++)
+            string text = txtMessage.Text?.Trim();
+            if (string.IsNullOrEmpty(text))
             {
-                text = text.Replace(fromChars[i], toChars[i]);
-                text = text.Replace(fromChars[i].ToUpper(), toChars[i].ToUpper());
+                return string.Empty;
             }
 
-            return text;
+            string plainText = text.Unidecode().ToUpperInvariant();
+
+            Regex regex = size == 5
+                ? new Regex(@"[\W\d]")
+                : new Regex(@"[\W]"); 
+            plainText = regex.Replace(plainText, string.Empty);
+
+            plainText = plainText.Replace("J", "I");
+
+            return plainText.Length % 2 == 0 ? plainText : plainText + "X";
+        }
+
+        private string DistinctString(string input)
+        {
+            return string.Concat(input.DistinctBy(c => c));
         }
 
         private void ModifyMatrix(Button[,] matrix, int size, int startRow, int startCol, string replacement)
         {
-            bool firstLoop = false;
-            int index = 0;
-
             List<string> newAlphabet = new List<string>(alphabet);
             foreach (char c in replacement)
                 newAlphabet.Remove(c.ToString());
 
-            for (int i = startRow; i < size; i++)
+            for (int i = startRow, index = 0; i < size; i++)
             {
-                if (!firstLoop)
+                for (int j = (i == startRow) ? startCol : 0; j < size; j++)
                 {
-                    for (int j = startCol; j < size; j++)
-                        matrix[i, j].Text = newAlphabet[index++];
-                    firstLoop = true;
-                }
-                else
-                {
-                    for (int j = 0; j < size; j++)
-                        matrix[i, j].Text = newAlphabet[index++];
+                    matrix[i, j].Text = newAlphabet[index % newAlphabet.Count];
+                    index++;
                 }
             }
-        }
-
-        private string PreparePlainText(int size)
-        {
-            if (!string.IsNullOrEmpty(txtMessage.Text))
-            {
-                string modifiedText = txtMessage.Text.ToUpper();
-                modifiedText = RemoveUnicode(modifiedText);
-
-                if (size == 5)
-                {
-                    modifiedText = Regex.Replace(modifiedText, @"[\W\d]", "");
-                    modifiedText = Regex.Replace(modifiedText, @"[jJ]", "I");
-                }
-                else if (size == 6)
-                    modifiedText = Regex.Replace(modifiedText, @"[\W]", "");
-
-                if (modifiedText.Length % 2 != 0)
-                    modifiedText += 'X';
-                return modifiedText;
-            }
-            return string.Empty;
         }
 
 
@@ -106,8 +72,8 @@ namespace NT101_PJ
             int row = 0, col = 0;
             foreach (char c in text)
             {
-                int indexCol = alphabet.IndexOf(c.ToString());
-                int indexRow = Convert.ToInt32(c);
+                var indexCol = alphabet.IndexOf(c.ToString());
+                var indexRow = Convert.ToInt32(c);
 
                 arrayMatrix[row, col].Text = c.ToString();
 
@@ -133,28 +99,29 @@ namespace NT101_PJ
 
         private void RadioButtons_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Checked)
+            if (!((RadioButton)sender).Checked)
             {
-                if (((RadioButton)sender) == rbt5x5)
-                {
-                    panel1.Controls.Clear();
-                    InitMatrix(5);
-                    checkString(5);
-                    check = 5;
-                    txtKey.Text = "";
-                    txtResult.Text = "";
-                    txtKey.KeyPress += Matrix5_KeyPress;
-                }
-                else if (((RadioButton)sender) == rbt6x6)
-                {
-                    panel1.Controls.Clear();
-                    InitMatrix(6);
-                    checkString(6);
-                    check = 6;
-                    txtKey.Text = "";
-                    txtResult.Text = "";
-                    txtKey.KeyPress += Matrix6_KeyPress;
-                }
+                return;
+            }
+            if (((RadioButton)sender) == rbt5x5)
+            {
+                panel1.Controls.Clear();
+                InitMatrix(5);
+                checkString(5);
+                check = 5;
+                txtKey.Text = "";
+                txtResult.Text = "";
+                txtKey.KeyPress += Matrix5_KeyPress;
+            }
+            else if (((RadioButton)sender) == rbt6x6)
+            {
+                panel1.Controls.Clear();
+                InitMatrix(6);
+                checkString(6);
+                check = 6;
+                txtKey.Text = "";
+                txtResult.Text = "";
+                txtKey.KeyPress += Matrix6_KeyPress;
             }
         }
 
@@ -176,61 +143,48 @@ namespace NT101_PJ
 
         private void InitMatrix(int size)
         {
-            int charNum = 65;
-            int offset = 0;
-            alphabet = new List<string>();
+            var characters = Enumerable.Range('A', 26)
+                .Concat(Enumerable.Range('0', 10))
+                .Select(c => (char)c)
+                .ToArray();
 
+            alphabet = characters.Select(c => c.ToString()).ToList();
+
+            // Use a single loop with calculated coordinates for button placement
             for (int i = 0; i < size; i++)
             {
-                Button oldBtn = new Button() { Width = 0, Height = 0, Location = new Point(0, offset * 30) };
                 for (int j = 0; j < size; j++)
                 {
-                    Button btn = new Button()
+                    var charIndex = i * size + j;
+                    var charNum = characters[charIndex % characters.Length]; // Handle character wrapping
+
+                    var btn = new Button()
                     {
                         Width = 30,
                         Height = 30,
-                        Location = new Point(oldBtn.Location.X + oldBtn.Width, oldBtn.Location.Y)
+                        Location = new Point(j * 30, i * 30), // Use simple coordinates
+                        Text = charNum.ToString()
                     };
-
-                    if (charNum > 90)
-                    {
-                        charNum = 48;
-                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
-                        alphabet.Add(btn.Text);
-                    }
-                    else if (charNum == 74 && size == 5)
-                    {
-                        charNum = 75;
-                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
-                        alphabet.Add(btn.Text);
-                    }
-                    else
-                    {
-                        btn.Text = Encoding.ASCII.GetString(new byte[] { (byte)charNum });
-                        alphabet.Add(btn.Text);
-                    }
 
                     arrayMatrix[i, j] = btn;
                     panel1.Controls.Add(btn);
-                    oldBtn = btn;
-                    charNum++;
                 }
-                offset++;
             }
         }
 
         private void checkString(int size)
         {
-            if (txtKey.Text != string.Empty)
+            if (txtKey.Text == string.Empty)
             {
-                switch (size)
-                {
-                    case 5:
-                        txtKey.Text = Regex.Replace(txtKey.Text, @"[0-9jJ]", "");
-                        break;
-                    case 6:
-                        break;
-                }
+                return;
+            }
+            switch (size)
+            {
+                case 5:
+                    txtKey.Text = Regex.Replace(txtKey.Text, @"[0-9jJ]", "");
+                    break;
+                case 6:
+                    break;
             }
         }
 
@@ -407,7 +361,7 @@ namespace NT101_PJ
 
         private void txtKey_TextChanged(object sender, EventArgs e)
         {
-            txtKey.Text = RemoveUnicode(txtKey.Text);
+            txtKey.Text = txtKey.Text.Unidecode();
             txtKey.MaxLength = 36;
             txtKey.SelectionStart = txtKey.Text.Length;
             txtKey.Text = txtKey.Text.ToUpper();
