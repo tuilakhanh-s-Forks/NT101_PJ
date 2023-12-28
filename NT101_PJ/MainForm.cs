@@ -6,5 +6,12 @@ namespace NT101_PJ
         {
             InitializeComponent();
         }
+
+        private void btPlayFair_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            PlayFairForm playFairForm = new PlayFairForm();
+            playFairForm.Show();
+        }
     }
 }
